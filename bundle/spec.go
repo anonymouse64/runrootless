@@ -32,7 +32,7 @@ func injectPRoot(spec *specs.Spec) error {
 	// copy the file into /proot/proot instead of using a bind mount
 	// using a bind mount doesn't work inside when running runc in a namespaced process group
 	// such as when running from a snap
-	err = exec.Command("cp", "-a", proot, filepath.Join(spec.Root.Path, "proot", "proot")).Run()
+	err = exec.Command("cp", "-a", proot, filepath.Join(spec.Root.Path, "proot")).Run()
 	if err != nil {
 		return err
 	}
@@ -51,7 +51,7 @@ func injectPRoot(spec *specs.Spec) error {
 		// 	Options:     []string{"bind", "ro"},
 		// },
 	)
-	spec.Process.Args = append([]string{"/dev/proot/proot", "-0"}, spec.Process.Args...)
+	spec.Process.Args = append([]string{"/proot", "-0"}, spec.Process.Args...)
 	spec.Process.Env = append(spec.Process.Env, "PROOT_TMP_DIR=/dev/proot")
 	enableSeccomp, _ := strconv.ParseBool(os.Getenv("RUNROOTLESS_SECCOMP"))
 	if !enableSeccomp {
